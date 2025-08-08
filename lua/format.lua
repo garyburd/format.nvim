@@ -16,7 +16,7 @@ local function show_error(bufnr, lines, errfn)
     vim.fn.setqflist(qfl)
     vim.api.nvim_command("cc 1")
   else
-    vim.api.nvim_err_writeln(table.concat(lines, "\n"))
+    vim.api.nvim_echo({ { table.concat(lines, "\n"), "ErrorMsg" } }, true, {})
   end
 end
 
@@ -27,7 +27,7 @@ local function update_buffer(bufnr, new_lines)
   -- instead of replacing all lines. Is there still an advantage to minimal
   -- update?
   local prev_lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, true)
-  local diffs = vim.diff(table.concat(new_lines, "\n"), table.concat(prev_lines, "\n"), {
+  local diffs = vim.text.diff(table.concat(new_lines, "\n"), table.concat(prev_lines, "\n"), {
     algorithm = "minimal",
     ctxlen = 0,
     result_type = "indices",
@@ -150,7 +150,7 @@ function M.run()
   local ft = vim.opt_local.filetype:get()
   local fmt = formatters[ft]
   if not fmt then
-    vim.api.nvim_err_writeln("No formatter for " .. ft)
+    vim.api.nvim_echo({ { "No formatter for " .. ft, 'ErrorMsg' } }, true, {})
     return
   end
   local bufnr = vim.api.nvim_get_current_buf()
